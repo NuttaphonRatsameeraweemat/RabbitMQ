@@ -14,5 +14,10 @@ namespace Prototype.RabiitMq.IntegrationEvents.EventHandling
         {
             File.WriteAllText(@"D:/rabbitMQ.txt", @event.Message);
         }
+
+        public string HandleRpc(OrderStartedIntegrationEvent @event)
+        {
+            return "Hello I'm cosumer, this is test message return.";
+        }
     }
 }

@@ -24,8 +24,9 @@ namespace Prototype.RabbitMq.Publish.Controllers
         public ActionResult<IEnumerable<string>> Get()
         {
             var eventMessage = new OrderStartedIntegrationEvent("Hello Test using RabbbitMQ Event Bus");
-            _eventBus.Publish(eventMessage);
-            return new string[] { "value1", "value2" };
+            string response = _eventBus.PublishRpc(eventMessage);
+            //_eventBus.Publish(eventMessage);
+            return new string[] { response };
         }
 
         // GET api/values/5

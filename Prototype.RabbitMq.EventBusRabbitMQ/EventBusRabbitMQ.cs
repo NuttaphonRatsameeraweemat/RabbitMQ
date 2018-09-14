@@ -15,6 +15,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using Polly.Retry;
 using Polly;
+using System.Collections.Concurrent;
 
 namespace Prototype.RabbitMq.EventBusRabbitMQ
 {
@@ -40,7 +41,7 @@ namespace Prototype.RabbitMq.EventBusRabbitMQ
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _subsManager = subsManager ?? new InMemoryEventBusSubscriptionsManager();
             _queueName = queueName;
-            _consumerChannel = CreateConsumerChannel();
+            _consumerChannel = CreateConsumerChannelRpc();
             _autofac = autofac;
             _retryCount = retryCount;
             _subsManager.OnEventRemoved += SubsManager_OnEventRemoved;
@@ -104,6 +105,73 @@ namespace Prototype.RabbitMq.EventBusRabbitMQ
                                      body: body);
                 });
             }
+        }
+
+        public string PublishRpc(IntegrationEvent @event)
+        {
+            string result = string.Empty;
+            if (!_persistentConnection.IsConnected)
+            {
+                _persistentConnection.TryConnect();
+            }
+
+            var policy = RetryPolicy.Handle<BrokerUnreachableException>()
+                .Or<SocketException>()
+                .WaitAndRetry(_retryCount, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)), (ex, time) =>
+                {
+                    _logger.LogWarning(ex.ToString());
+                });
+
+            using (var channel = _persistentConnection.CreateModel())
+            {
+                BlockingCollection<string> respQueue = new BlockingCollection<string>();
+
+                var eventName = @event.GetType()
+                    .Name;
+
+                channel.ExchangeDeclare(exchange: BROKER_NAME,
+                                    type: "direct");
+
+                var replyQueueName = channel.QueueDeclare().QueueName;
+                var consumer = new EventingBasicConsumer(channel);
+
+                var message = JsonConvert.SerializeObject(@event);
+                var body = Encoding.UTF8.GetBytes(message);
+
+                var correlationId = Guid.NewGuid().ToString();
+
+                consumer.Received += (model, ea) =>
+                {
+                    var receiveMsg = ea.Body;
+                    var response = Encoding.UTF8.GetString(receiveMsg);
+                    if (ea.BasicProperties.CorrelationId == correlationId)
+                    {
+                        respQueue.Add(response);
+                    }
+                };
+
+                policy.Execute(() =>
+                {
+                    var properties = channel.CreateBasicProperties();
+                    properties.DeliveryMode = 2; // persistent
+                    
+                    properties.CorrelationId = correlationId;
+                    properties.ReplyTo = replyQueueName;
+
+                    channel.BasicPublish(exchange: BROKER_NAME,
+                                 routingKey: eventName,
+                                 mandatory: true,
+                                 basicProperties: properties,
+                                 body: body);
+                    channel.BasicConsume(
+                                    consumer: consumer,
+                                    queue: replyQueueName,
+                                    autoAck: true);
+                });
+
+                result = respQueue.Take();
+            }
+            return result;
         }
 
         public void SubscribeDynamic<TH>(string eventName)
@@ -207,6 +275,63 @@ namespace Prototype.RabbitMq.EventBusRabbitMQ
             return channel;
         }
 
+        private IModel CreateConsumerChannelRpc()
+        {
+            if (!_persistentConnection.IsConnected)
+            {
+                _persistentConnection.TryConnect();
+            }
+
+            var channel = _persistentConnection.CreateModel();
+
+            channel.ExchangeDeclare(exchange: BROKER_NAME,
+                                 type: "direct");
+
+            channel.QueueDeclare(queue: _queueName,
+                                 durable: true,
+                                 exclusive: false,
+                                 autoDelete: false,
+                                 arguments: null);
+
+
+            var consumer = new EventingBasicConsumer(channel);
+            consumer.Received += (model, ea) =>
+            {
+                var eventName = ea.RoutingKey;
+                var message = Encoding.UTF8.GetString(ea.Body);
+
+                string response = ProcessEventRpc(eventName, message);
+
+                var props = ea.BasicProperties;
+
+                if (props.ReplyTo != null)
+                {
+                    var replyProps = channel.CreateBasicProperties();
+                    replyProps.CorrelationId = props.CorrelationId;
+                    var responseBytes = Encoding.UTF8.GetBytes(response);
+                    channel.BasicPublish(exchange: "",
+                                         routingKey: props.ReplyTo,
+                                         basicProperties: replyProps,
+                                         body: responseBytes);
+                }
+                
+                channel.BasicAck(ea.DeliveryTag, multiple: false);
+                
+            };
+
+            channel.BasicConsume(queue: _queueName,
+                                 autoAck: false,
+                                 consumer: consumer);
+
+            channel.CallbackException += (sender, ea) =>
+            {
+                _consumerChannel.Dispose();
+                _consumerChannel = CreateConsumerChannelRpc();
+            };
+
+            return channel;
+        }
+
         private async Task ProcessEvent(string eventName, string message)
         {
             if (_subsManager.HasSubscriptionsForEvent(eventName))
@@ -233,6 +358,36 @@ namespace Prototype.RabbitMq.EventBusRabbitMQ
                     }
                 }
             }
+        }
+
+        private string ProcessEventRpc(string eventName, string message)
+        {
+            string result = "Not have event name for process.";
+            if (_subsManager.HasSubscriptionsForEvent(eventName))
+            {
+                using (var scope = _autofac.BeginLifetimeScope(AUTOFAC_SCOPE_NAME))
+                {
+                    var subscriptions = _subsManager.GetHandlersForEvent(eventName);
+                    foreach (var subscription in subscriptions)
+                    {
+                        if (subscription.IsDynamic)
+                        {
+                            var handler = scope.ResolveOptional(subscription.HandlerType) as IDynamicIntegrationEventHandler;
+                            dynamic eventData = JObject.Parse(message);
+                            result = handler.HandleRpc(eventData);
+                        }
+                        else
+                        {
+                            var eventType = _subsManager.GetEventTypeByName(eventName);
+                            var integrationEvent = JsonConvert.DeserializeObject(message, eventType);
+                            var handler = scope.ResolveOptional(subscription.HandlerType);
+                            var concreteType = typeof(IIntegrationEventHandler<>).MakeGenericType(eventType);
+                            result = (string)concreteType.GetMethod("HandleRpc").Invoke(handler, new object[] { integrationEvent });
+                        }
+                    }
+                }
+            }
+            return result;
         }
 
     }

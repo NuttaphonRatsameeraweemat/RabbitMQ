@@ -7,6 +7,9 @@ namespace Prototype.RabbitMq.EventBus.Abstractions
         where TIntegrationEvent : IntegrationEvent
     {
         Task Handle(TIntegrationEvent @event);
+
+        string HandleRpc(TIntegrationEvent @event);
+
     }
 
     public interface IIntegrationEventHandler

@@ -6,6 +6,8 @@ namespace Prototype.RabbitMq.EventBus.Abstractions
     {
         void Publish(IntegrationEvent @event);
 
+        string PublishRpc(IntegrationEvent @event);
+
         void Subscribe<T, TH>()
             where T : IntegrationEvent
             where TH : IIntegrationEventHandler<T>;

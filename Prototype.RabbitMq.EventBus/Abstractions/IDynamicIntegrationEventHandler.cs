@@ -8,5 +8,7 @@ namespace Prototype.RabbitMq.EventBus.Abstractions
     public interface IDynamicIntegrationEventHandler
     {
         Task Handle(dynamic eventData);
+
+        string HandleRpc(dynamic eventData);
     }
 }
