@@ -1,0 +1,27 @@
+version: '3.4'
+
+services:
+
+  rabbitmq:
+    ports:
+      - "15672:15672"  # Important: In a production environment your should remove the external port
+      - "5672:5672"    # Important: In a production environment your should remove the external port
+
+  prototype.rabiitmq:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - EventBusConnection=${ESHOP_AZURE_SERVICE_BUS:-rabbitmq}
+      - EventBusUserName=guest
+      - EventBusPassword=guest    
+    ports:
+      - "80"
+
+  prototype.rabbitmq.publish:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - EventBusConnection=${ESHOP_AZURE_SERVICE_BUS:-rabbitmq}
+      - EventBusUserName=guest
+      - EventBusPassword=guest
+    ports:
+      - "80"
+

@@ -3,15 +3,17 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27703.2042
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Prototype.RabiitMq", "Prototype.RabiitMq\Prototype.RabiitMq.csproj", "{B3030C3C-000E-4E93-B531-CBB929B3ABB6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Prototype.RabiitMq", "Prototype.RabiitMq\Prototype.RabiitMq.csproj", "{B3030C3C-000E-4E93-B531-CBB929B3ABB6}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "EventBus", "EventBus", "{E5D489D4-6E40-4F0B-8813-0B39C40CAC6B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Prototype.RabbitMq.EventBus", "Prototype.RabbitMq.EventBus\Prototype.RabbitMq.EventBus.csproj", "{9193A1E2-369C-4B69-98BA-F8E39CC5211D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Prototype.RabbitMq.EventBus", "Prototype.RabbitMq.EventBus\Prototype.RabbitMq.EventBus.csproj", "{9193A1E2-369C-4B69-98BA-F8E39CC5211D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Prototype.RabbitMq.EventBusRabbitMQ", "Prototype.RabbitMq.EventBusRabbitMQ\Prototype.RabbitMq.EventBusRabbitMQ.csproj", "{545C82E8-A8BF-48DE-9674-7193A2FC4FC0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Prototype.RabbitMq.EventBusRabbitMQ", "Prototype.RabbitMq.EventBusRabbitMQ\Prototype.RabbitMq.EventBusRabbitMQ.csproj", "{545C82E8-A8BF-48DE-9674-7193A2FC4FC0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Prototype.RabbitMq.Publish", "Prototype.RabbitMq.Publish\Prototype.RabbitMq.Publish.csproj", "{CDEA91EF-E128-4384-A024-AE37C0F84539}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Prototype.RabbitMq.Publish", "Prototype.RabbitMq.Publish\Prototype.RabbitMq.Publish.csproj", "{CDEA91EF-E128-4384-A024-AE37C0F84539}"
+EndProject
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{F85D40CE-5E44-4AA0-A13A-269B491C7F27}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -35,6 +37,10 @@ Global
 		{CDEA91EF-E128-4384-A024-AE37C0F84539}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CDEA91EF-E128-4384-A024-AE37C0F84539}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CDEA91EF-E128-4384-A024-AE37C0F84539}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F85D40CE-5E44-4AA0-A13A-269B491C7F27}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F85D40CE-5E44-4AA0-A13A-269B491C7F27}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F85D40CE-5E44-4AA0-A13A-269B491C7F27}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F85D40CE-5E44-4AA0-A13A-269B491C7F27}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
