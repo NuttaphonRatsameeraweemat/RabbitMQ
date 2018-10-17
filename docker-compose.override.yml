@@ -14,7 +14,7 @@ services:
       - EventBusUserName=guest
       - EventBusPassword=guest    
     ports:
-      - "80"
+      - "5105:80"
 
   prototype.rabbitmq.publish:
     environment:
@@ -23,5 +23,12 @@ services:
       - EventBusUserName=guest
       - EventBusPassword=guest
     ports:
-      - "80"
+      - "5106:80"
+
+
+  apigateways:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    ports:
+      - "5200:80"
 

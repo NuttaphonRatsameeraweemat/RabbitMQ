@@ -21,3 +21,13 @@ services:
     depends_on:
       - rabbitmq 
 
+
+  apigateways:
+    image: ${DOCKER_REGISTRY}apigateways
+    build:
+      context: .
+      dockerfile: ApiGateWays/Dockerfile
+    depends_on:
+      - prototype.rabiitmq 
+      - prototype.rabbitmq.publish 
+      - rabbitmq 

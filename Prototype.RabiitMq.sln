@@ -15,6 +15,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Prototype.RabbitMq.Publish"
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{F85D40CE-5E44-4AA0-A13A-269B491C7F27}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiGateWays", "ApiGateWays\ApiGateWays.csproj", "{5857B7E8-DA69-4714-96FF-181C2F6BD7B6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -41,6 +43,10 @@ Global
 		{F85D40CE-5E44-4AA0-A13A-269B491C7F27}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F85D40CE-5E44-4AA0-A13A-269B491C7F27}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F85D40CE-5E44-4AA0-A13A-269B491C7F27}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5857B7E8-DA69-4714-96FF-181C2F6BD7B6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5857B7E8-DA69-4714-96FF-181C2F6BD7B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5857B7E8-DA69-4714-96FF-181C2F6BD7B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5857B7E8-DA69-4714-96FF-181C2F6BD7B6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

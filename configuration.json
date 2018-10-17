@@ -1,0 +1,30 @@
+{
+  "ReRoutes": [
+    {
+      "DownstreamPathTemplate": "/api/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "prototype.rabiitmq",
+          "Port": 80
+        }
+      ],
+      "UpstreamPathTemplate": "/a/{everything}",
+      "UpstreamHttpMethod": []
+    },
+    {
+      "DownstreamPathTemplate": "/api/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "prototype.rabbitmq.publish",
+          "Port": 80
+        }
+      ],
+      "UpstreamPathTemplate": "/b/{everything}",
+      "UpstreamHttpMethod": []
+    }
+
+  ],
+  "GlobalConfiguration": {}
+}
